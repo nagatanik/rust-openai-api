@@ -4,9 +4,9 @@ use std::env;
 
 #[tokio::main]
 async fn main() {
-    let api_key = match env::var("OPEN_AI_KEY") {
+    let api_key = match env::var("OPENAI_API_KEY") {
         Ok(key) => key,
-        Err(_) => panic!("Please set OPEN_AI_KEY environment variable."),
+        Err(_) => panic!("Please set OPENAI_API_KEY environment variable."),
     };
 
     let openai_stream = OpenAIStream::new(api_key);
