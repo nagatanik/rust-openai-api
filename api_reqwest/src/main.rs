@@ -1,3 +1,4 @@
+use std::io;
 use std::env;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -51,13 +52,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Err(_) => panic!("Please set OPENAI_API_KEY environment variable."),
     };
 
+    let mut input = String::new();
+
+    while input.len() < 1 {
+        println!("Please input your message.");
+        io::stdin().read_line(&mut input)?;
+        input = input.trim().to_string();
+    }
+    // println!("Your message: {}, len {}", input, input.len());
+
     let client = Client::new();
     let body = RequestBody {
         model: "gpt-3.5-turbo".to_string(),
         messages: vec![
             Message {
                 role: "user".to_string(),
-                content: "Hello, World!".to_string(),
+                content: input,
             }
         ],
     };
@@ -71,7 +81,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if res.status().is_success() {
         let response_body = res.json::<ApiResponse>().await?;
-        println!("{:#?}", response_body);
+        println!("{:#?}", response_body[0].choices[0].message.content);
     } else {
         eprintln!("Error: {:?}", res.status());
     }
